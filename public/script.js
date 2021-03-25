@@ -4,6 +4,7 @@ const startGameButton = document.querySelector('#start-game-button')
 
 //helper function to display cards
 const display = (cardData)=> {
+  console.log(cardData)
   const player1Card = document.querySelector('#player1Card')
   const player2Card = document.querySelector('#player2Card')
   player1Card.innerText = `${cardData.playersHands[0].name} of ${cardData.playersHands[0].suit} `
@@ -31,6 +32,19 @@ const dealCards = ()=> {
     display(currentGame)
   })
 }
+
+axios.get('/status').then((response)=> {
+  // check if there is a game in progress for this user
+  if (response.data.inProgress) {
+    //if true, render all the game elements
+    startGame()
+    // render the current cards of the game
+    axios.get(`/games/${response.data.id}/refresh`).then((response)=> {
+      currentGame = response.data
+      display(currentGame)
+    })
+  }
+})
 
 //display all game elements
 const startGame = ()=> {
@@ -87,11 +101,10 @@ const startGame = ()=> {
   player2Div.appendChild(player2Card)
   player2Div.appendChild(player2Label)
   player2Div.appendChild(player2Score)  
-  // get players card from db
+  // get players card from db and increment score if necessary
   axios.post('/games')
   .then((response)=> {
     currentGame = response.data
-    console.log(currentGame)
     display(currentGame)
   })
 }

@@ -15,4 +15,6 @@ export default function bindRoutes(app) {
   app.put('/games/:gameId/deal', GamesController.deal)
   //refresh cards for other player to see
   app.get('/games/:gameId/refresh', GamesController.refresh)
+  // find out if there is a game running for the current user
+  app.get('/status', GamesController.status)
 }

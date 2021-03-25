@@ -116,6 +116,7 @@ export default function initGamesController(db) {
     const player2Hand = cardDeck.pop()
     const newGame = {
       gameState: {
+        inProgress: true,
         cardDeck,
         player1Hand,
         player2Hand
@@ -135,6 +136,7 @@ export default function initGamesController(db) {
       await game.addUser(users[1])
       // send players' hands and game id to browser
       res.send({
+        inProgress: game.gameState.inProgress,
         id: game.id,
         playersHands: [player1Hand, player2Hand]
       })
@@ -180,5 +182,27 @@ export default function initGamesController(db) {
     }
   }
 
-  return { create, game, deal, refresh };
+  const status = async(req, res)=> {
+    const {userId} = req.cookies
+    try{
+      const userGames = await db.User.findOne({
+      where: {
+        id: userId
+      },
+      include:{
+        model: db.Game,
+      }
+    })
+      const game = userGames.games[userGames.games.length-1]
+      res.send({
+        id: game.id,
+        inProgress: game.gameState.inProgress,
+        playersHands: [game.gameState.player1Hand, game.gameState.player2Hand]
+      })
+    } catch(err) {
+      console.log(err)
+    }
+  }
+
+  return { create, game, deal, refresh, status };
 }
