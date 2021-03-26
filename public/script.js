@@ -19,7 +19,6 @@ const calScore = (cardData)=> {
     } else {
       scoreBanner.innerText = 'Player 1 Scores'
     }
-  
   } else if (cardData.playersHands[0].rank < cardData.playersHands[1].rank) { 
     player2Score.innerText = Number(player2Score.innerText) + 1
     if (player2Score.innerText == '3') {
@@ -30,7 +29,10 @@ const calScore = (cardData)=> {
       // player 2 scores
       scoreBanner.innerText = 'Player 2 Scores'
     }
-    
+  }
+  //draw
+  else {
+    scoreBanner.innerText = 'DRAW!'
   }
 }
 
