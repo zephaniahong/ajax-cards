@@ -1,18 +1,36 @@
 //global variables
 let currentGame;
+let canDeal = true
 const startGameButton = document.querySelector('#start-game-button')
 
 // helper function to calculate winning hand
 const calScore = (cardData)=> {
   const player1Score = document.querySelector('#player1Score')
   const player2Score = document.querySelector('#player2Score')
+  const scoreBanner = document.querySelector('#scoreBanner')
   // check winner for the round
-  // player 1 wins
   if (cardData.playersHands[0].rank > cardData.playersHands[1].rank) {
     player1Score.innerText = Number(player1Score.innerText) + 1
-  // player 2 wins
-  } else if (cardData.playersHands[0].rank < cardData.playersHands[1].rank) {
+  // player 1 wins
+    if (player1Score.innerText === '3') {
+      scoreBanner.innerText = 'Player 1 WINS!!!'  
+      canDeal = false
+  // player 1 scores
+    } else {
+      scoreBanner.innerText = 'Player 1 Scores'
+    }
+  
+  } else if (cardData.playersHands[0].rank < cardData.playersHands[1].rank) { 
     player2Score.innerText = Number(player2Score.innerText) + 1
+    if (player2Score.innerText == '3') {
+      // player 2 wins
+      player2Score.innerText = 'Player 2 WINS!!!'
+      canDeal = false
+    } else {
+      // player 2 scores
+      scoreBanner.innerText = 'Player 2 Scores'
+    }
+    
   }
 }
 
@@ -41,8 +59,10 @@ const dealCards = ()=> {
   axios.put(`/games/${gameId}/deal`)
   .then((response)=> {
     currentGame = response.data
-    display(currentGame)
-    calScore(currentGame)
+    if (canDeal) {
+      display(currentGame)
+      calScore(currentGame)
+    }
   })
 }
 
@@ -83,6 +103,8 @@ const startGame = ()=> {
   const gameInterfaceDiv = document.createElement('div')
   const cardContainer = document.createElement('div')
   cardContainer.classList.add('cardContainer')
+  const scoreBanner = document.createElement('h3')
+  scoreBanner.id = 'scoreBanner'
   //player1&2 div
   const player1Div = document.createElement('div')
   const player2Div = document.createElement('div')
@@ -101,11 +123,10 @@ const startGame = ()=> {
   player1Score.innerText = 0
   player2Score.innerText = 0
 
-
-
   //append all elements
   container.appendChild(dealButton)
   container.appendChild(refreshButton)
+  container.appendChild(scoreBanner)
   // container.appendChild(gameInterfaceDiv)
   container.appendChild(cardContainer)
   cardContainer.appendChild(player1Div)
