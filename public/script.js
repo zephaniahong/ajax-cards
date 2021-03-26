@@ -2,9 +2,22 @@
 let currentGame;
 const startGameButton = document.querySelector('#start-game-button')
 
+// helper function to calculate winning hand
+const calScore = (cardData)=> {
+  const player1Score = document.querySelector('#player1Score')
+  const player2Score = document.querySelector('#player2Score')
+  // check winner for the round
+  // player 1 wins
+  if (cardData.playersHands[0].rank > cardData.playersHands[1].rank) {
+    player1Score.innerText = Number(player1Score.innerText) + 1
+  // player 2 wins
+  } else if (cardData.playersHands[0].rank < cardData.playersHands[1].rank) {
+    player2Score.innerText = Number(player2Score.innerText) + 1
+  }
+}
+
 //helper function to display cards
 const display = (cardData)=> {
-  console.log(cardData)
   const player1Card = document.querySelector('#player1Card')
   const player2Card = document.querySelector('#player2Card')
   player1Card.innerText = `${cardData.playersHands[0].name} of ${cardData.playersHands[0].suit} `
@@ -28,8 +41,8 @@ const dealCards = ()=> {
   axios.put(`/games/${gameId}/deal`)
   .then((response)=> {
     currentGame = response.data
-    console.log(currentGame)
     display(currentGame)
+    calScore(currentGame)
   })
 }
 
@@ -82,7 +95,9 @@ const startGame = ()=> {
   player1Label.innerText = 'P1 Cards'
   player2Label.innerText = 'P2 Cards'
   const player1Score = document.createElement('p')
+  player1Score.id = 'player1Score'
   const player2Score = document.createElement('p')
+  player2Score.id = 'player2Score'
   player1Score.innerText = 0
   player2Score.innerText = 0
 
@@ -106,6 +121,7 @@ const startGame = ()=> {
   .then((response)=> {
     currentGame = response.data
     display(currentGame)
+    calScore(currentGame)
   })
 }
 //start game when start game button is clicked
